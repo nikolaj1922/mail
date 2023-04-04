@@ -12,13 +12,18 @@ import { IconButton } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import DuoIcon from "@mui/icons-material/Duo";
 import PhoneIcon from "@mui/icons-material/Phone";
+import { useAppDispatch } from "@/store/hooks";
+import { openSendMessage } from "@/store";
 
 const Sidebar = () => {
+  const dispatch = useAppDispatch();
+
   return (
     <div className={styles.sidebar}>
       <Button
         startIcon={<AddIcon fontSize="large" />}
         className={styles.sidebar__compose}
+        onClick={() => dispatch(openSendMessage())}
       >
         Compose
       </Button>

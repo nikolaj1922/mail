@@ -4,16 +4,25 @@ import { IconButton, Checkbox } from "@mui/material";
 import StarBorderOutlinedIcon from "@mui/icons-material/StarBorderOutlined";
 import LabelImportantOutlinedIcon from "@mui/icons-material/LabelImportantOutlined";
 import Link from "next/link";
+import { useAppDispatch } from "@/store/hooks";
+import { selectMail } from "@/store";
+import { IEmailRow } from "@/types";
 
-interface Props {
-  id: string;
-  title: string;
-  subject: string;
-  description: string;
-  time: string;
-}
+const EmailRow: FC<IEmailRow> = ({ id, title, subject, description, time }) => {
+  const dispatch = useAppDispatch();
 
-const EmailRow: FC<Props> = ({ id, title, subject, description, time }) => {
+  const openMail = () => {
+    dispatch(
+      selectMail({
+        id,
+        title,
+        subject,
+        description,
+        time,
+      })
+    );
+  };
+
   return (
     <div className={styles.emailRow}>
       <div className={styles.emailRow__options}>
@@ -25,7 +34,7 @@ const EmailRow: FC<Props> = ({ id, title, subject, description, time }) => {
           <LabelImportantOutlinedIcon />
         </IconButton>
       </div>
-      <Link href="/mail" className={styles.linkContainer}>
+      <Link href="/mail" className={styles.linkContainer} onClick={openMail}>
         <h3 className={styles.emailRow__title}>{title}</h3>
 
         <div className={styles.emailRow__message}>

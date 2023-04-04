@@ -13,8 +13,39 @@ import Checkbox from "@mui/material/Checkbox";
 import { IconButton } from "@mui/material";
 import Section from "./Section";
 import EmailRow from "./EmailRow";
+import {
+  DocumentData,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { db } from "@/firebase";
+import { IEmail } from "@/types";
+
+interface IData {
+  id: string;
+  data: IEmail;
+}
 
 const EmailList = () => {
+  const [emails, setEmails] = useState<IData[] | DocumentData[]>([]);
+  const q = query(collection(db, "emails"), orderBy("timestamp", "desc"));
+
+  useEffect(
+    () =>
+      onSnapshot(q, (snapshot) => {
+        setEmails(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        );
+      }),
+    [db]
+  );
+
   return (
     <div className={styles.emailList}>
       <div className={styles.emailList__settings}>
@@ -53,20 +84,16 @@ const EmailList = () => {
       </div>
 
       <div className={styles.emailList__list}>
-        <EmailRow
-          id="1"
-          title="Twitch"
-          subject="Hey fellow streamer!!!"
-          description="This is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is testThis is test"
-          time="18pm"
-        />
-        <EmailRow
-          id="1"
-          title="Twitch"
-          subject="Hey fellow streamer!!!"
-          description="This is test"
-          time="18pm"
-        />
+        {emails.map(({ id, data: { to, subject, message, timestamp } }) => (
+          <EmailRow
+            key={id}
+            id={id}
+            title={to}
+            subject={subject}
+            description={message}
+            time={new Date(timestamp?.seconds * 1000).toUTCString()}
+          />
+        ))}
       </div>
     </div>
   );
